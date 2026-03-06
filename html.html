@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversor de Tempo</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{
+background:#fff;
+width:95%;
+max-width:430px;
+padding:25px;
+border-radius:15px;
+box-shadow:0 15px 30px rgba(0,0,0,0.3);
+text-align:center;
+}
+
+h1{color:#1e3c72;}
+
+h2{
+margin-top:25px;
+color:#2a5298;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:none;
+border-radius:8px;
+background:#1e3c72;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#2a5298;
+}
+
+.resultado{
+margin-top:10px;
+padding:10px;
+background:#f2f2f2;
+border-radius:8px;
+font-weight:bold;
+}
+
+#historico{
+margin-top:15px;
+background:#fafafa;
+padding:10px;
+border-radius:8px;
+max-height:150px;
+overflow:auto;
+font-size:14px;
+text-align:left;
+}
+
+footer{
+margin-top:20px;
+font-size:12px;
+color:#777;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Conversor de Tempo</h1>
+
+<input type="number" id="valor" placeholder="Digite minutos ou horas">
+
+<button onclick="converterParaHoras()">Minutos → Horas</button>
+<button onclick="converterParaMinutos()">Horas → Minutos</button>
+
+<div class="resultado" id="resultadoConversao"></div>
+
+<h2>Calcular Hora Final</h2>
+
+<input type="time" id="horaInicial" value="13:30">
+<input type="number" id="minutosAdicionar" value="120">
+
+<button onclick="calcularHoraFinal()">Calcular Hora Final</button>
+
+<div class="resultado" id="resultadoHora"></div>
+
+<h2>Cálculo Reverso (Hora de Entrada)</h2>
+
+<input type="time" id="horaFinal" value="18:00">
+
+<input type="number" id="t1" placeholder="Tempo 1 (min)">
+<input type="number" id="t2" placeholder="Tempo 2 (min)">
+<input type="number" id="t3" placeholder="Tempo 3 (min)">
+<input type="number" id="t4" placeholder="Tempo 4 (min)">
+<input type="number" id="t5" placeholder="Tempo 5 (min)">
+<input type="number" id="t6" placeholder="Tempo 6 (min)">
+
+<button onclick="calcularEntrada()">Calcular Hora de Entrada</button>
+
+<div class="resultado" id="resultadoEntrada"></div>
+
+<h2>Histórico</h2>
+
+<div id="historico"></div>
+
+<footer>
+Desenvolvido por Leandro G Ataide
+</footer>
+
+</div>
+
+<script>
+
+let historico = JSON.parse(localStorage.getItem("historicoTempo")) || [];
+
+function salvarHistorico(texto){
+
+historico.unshift(texto);
+
+if(historico.length>20) historico.pop();
+
+localStorage.setItem("historicoTempo",JSON.stringify(historico));
+
+mostrarHistorico();
+
+}
+
+function mostrarHistorico(){
+
+let div=document.getElementById("historico");
+
+div.innerHTML="";
+
+historico.forEach(item=>{
+div.innerHTML+="<div>"+item+"</div>";
+});
+
+}
+
+// CONVERSÕES CORRETAS
+
+function converterParaHoras(){
+
+let valor=parseFloat(document.getElementById("valor").value);
+
+if(isNaN(valor)) return;
+
+let horas = valor / 60;
+
+let resultado = valor+" minutos = "+horas.toFixed(2).replace(".",",")+" horas";
+
+document.getElementById("resultadoConversao").innerHTML=resultado;
+
+salvarHistorico(resultado);
+
+}
+
+function converterParaMinutos(){
+
+let valor=parseFloat(document.getElementById("valor").value);
+
+if(isNaN(valor)) return;
+
+let minutos = valor * 60;
+
+let resultado = valor+" horas = "+minutos+" minutos";
+
+document.getElementById("resultadoConversao").innerHTML=resultado;
+
+salvarHistorico(resultado);
+
+}
+
+// SOMA DE HORÁRIO
+
+function calcularHoraFinal(){
+
+let horaInicial=document.getElementById("horaInicial").value;
+let minutosAdicionar=parseInt(document.getElementById("minutosAdicionar").value)||0;
+
+let [h,m]=horaInicial.split(":").map(Number);
+
+let total=(h*60)+m+minutosAdicionar;
+
+let horaFinal=Math.floor(total/60);
+let minutoFinal=total%60;
+
+horaFinal=((horaFinal%24)+24)%24;
+
+let resultado="Hora final: "+horaFinal.toString().padStart(2,'0')+":"+minutoFinal.toString().padStart(2,'0');
+
+document.getElementById("resultadoHora").innerHTML=resultado;
+
+salvarHistorico(horaInicial+" + "+minutosAdicionar+"min = "+resultado);
+
+}
+
+// SUBTRAÇÃO CORRETA
+
+function calcularEntrada(){
+
+let horaFinal=document.getElementById("horaFinal").value;
+
+let tempos=[
+parseInt(document.getElementById("t1").value)||0,
+parseInt(document.getElementById("t2").value)||0,
+parseInt(document.getElementById("t3").value)||0,
+parseInt(document.getElementById("t4").value)||0,
+parseInt(document.getElementById("t5").value)||0,
+parseInt(document.getElementById("t6").value)||0
+];
+
+let totalTempo=tempos.reduce((a,b)=>a+b,0);
+
+let [h,m]=horaFinal.split(":").map(Number);
+
+let total=(h*60)+m-totalTempo;
+
+while(total<0) total+=1440;
+
+let horaEntrada=Math.floor(total/60);
+let minutoEntrada=total%60;
+
+let resultado="Hora de entrada: "+horaEntrada.toString().padStart(2,'0')+":"+minutoEntrada.toString().padStart(2,'0');
+
+document.getElementById("resultadoEntrada").innerHTML=resultado;
+
+salvarHistorico("Entrada calculada: "+resultado);
+
+}
+
+window.onload=mostrarHistorico;
+
+</script>
+
+</body>
+</html>
+
