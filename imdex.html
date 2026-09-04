@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Conversor de Tempo</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Conversor de Tempo</h1>
+
+<input type="number" id="valor" placeholder="Digite minutos ou horas">
+
+<button onclick="converterParaHoras()">Minutos → Horas</button>
+<button onclick="converterParaMinutos()">Horas → Minutos</button>
+
+<div class="resultado" id="resultadoConversao"></div>
+
+<h2>Calcular Hora Final</h2>
+
+<input type="time" id="horaInicial" value="13:30">
+<input type="number" id="minutosAdicionar" value="120">
+
+<button onclick="calcularHoraFinal()">Calcular Hora Final</button>
+
+<div class="resultado" id="resultadoHora"></div>
+
+<h2>Cálculo Reverso (Hora de Entrada)</h2>
+
+<input type="time" id="horaFinal" value="18:00">
+
+<input type="number" id="t1" placeholder="Tempo 1 (min)">
+<input type="number" id="t2" placeholder="Tempo 2 (min)">
+<input type="number" id="t3" placeholder="Tempo 3 (min)">
+<input type="number" id="t4" placeholder="Tempo 4 (min)">
+<input type="number" id="t5" placeholder="Tempo 5 (min)">
+<input type="number" id="t6" placeholder="Tempo 6 (min)">
+
+<button onclick="calcularEntrada()">Calcular Hora de Entrada</button>
+
+<div class="resultado" id="resultadoEntrada"></div>
+
+<h2>Histórico</h2>
+
+<div id="historico"></div>
+
+<footer>
+Desenvolvido por Leandro G Ataide
+</footer>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
